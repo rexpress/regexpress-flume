@@ -41,10 +41,14 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>express.regular.flume.FlumeTester</mainClass>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
+                            <mainClass>express.regular.hive.HiveTester</mainClass>
                         </manifest>
+                        <manifestEntries>
+                            <Built-By>bdh92123</Built-By>
+                            <Class-Path>. lib/custom.jar</Class-Path>
+                        </manifestEntries>
                     </archive>
                 </configuration>
             </plugin>
