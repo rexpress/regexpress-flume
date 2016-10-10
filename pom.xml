@@ -6,7 +6,7 @@
 
     <groupId>express.regular</groupId>
     <artifactId>flume</artifactId>
-    <version>1.0</version>
+    <version>master</version>
     <build>
         <plugins>
             <plugin>
