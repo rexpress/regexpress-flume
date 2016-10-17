@@ -1,7 +1,9 @@
 package express.regular.flume;
 
-import com.google.gson.Gson;
-import express.regular.common.*;
+import express.regular.common.GroupResult;
+import express.regular.common.MatchResult;
+import express.regular.common.TestResult;
+import express.regular.common.Tester;
 import express.regular.exception.InvalidConfigException;
 import org.apache.flume.Context;
 import org.apache.flume.Event;
@@ -10,7 +12,8 @@ import org.apache.flume.interceptor.Interceptor;
 import org.apache.flume.interceptor.RegexExtractorInterceptor;
 import org.apache.flume.interceptor.RegexFilteringInterceptor;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.*;
 
 public class FlumeTester extends Tester {
@@ -22,8 +25,6 @@ public class FlumeTester extends Tester {
 
     public static final String TYPE_FILTERING = "filtering";
     public static final String TYPE_EXTRACTOR = "extractor";
-
-    private static Gson gson = new Gson();
 
     public TestResult testRegexFilteringInterceptor(Map<String, Object> configMap, List<String> testStrings) throws IOException {
         TestResult testResult = new TestResult();

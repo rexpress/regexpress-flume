@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import express.regular.common.GroupResult;
 import express.regular.common.MatchResult;
 import express.regular.common.TestResult;
-import express.regular.common.Tester;
 import express.regular.flume.FlumeTester;
 import org.junit.Assert;
 import org.junit.Test;
@@ -19,7 +18,6 @@ public class FlumeTesterTest {
     @Test
     public void flumeFilteringTest() {
         Map<String, Object> configMap = new HashMap<String, Object>();
-        configMap.put(Tester.CONFIG_IS_DEBUG, true);
         configMap.put(FlumeTester.CONFIG_TYPE, FlumeTester.TYPE_FILTERING);
         configMap.put(FlumeTester.CONFIG_FILTERING_REGEX,  "([a-zA-Z]*) ([a-zA-Z]*) ([a-zA-Z]*)");
         configMap.put(FlumeTester.CONFIG_FILTERING_EXCLUDE_EVENTS, "false");
@@ -42,7 +40,6 @@ public class FlumeTesterTest {
     @Test
     public void flumeExtractorTest() {
         Map<String, Object> configMap = new HashMap<String, Object>();
-        configMap.put(Tester.CONFIG_IS_DEBUG, true);
         configMap.put(FlumeTester.CONFIG_TYPE, FlumeTester.TYPE_EXTRACTOR);
         StringBuffer flumeContext = new StringBuffer();
         flumeContext.append("regex=([a-zA-Z]*) ([a-zA-Z]*) ([a-zA-Z]*)").append("\n")
