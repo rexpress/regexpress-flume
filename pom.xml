@@ -6,7 +6,7 @@
 
     <groupId>express.regular</groupId>
     <artifactId>flume</artifactId>
-    <version>master</version>
+    <version>1.6.0</version>
     <properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -49,7 +49,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>express.regular.hive.HiveTester</mainClass>
+                            <mainClass>express.regular.flume.FlumeTester</mainClass>
                         </manifest>
                         <manifestEntries>
                             <Built-By>bdh92123</Built-By>
