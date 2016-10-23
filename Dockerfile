@@ -1,4 +1,4 @@
-FROM regexpress/maven:oraclejdk8
+FROM regexpress/base-maven:oraclejdk8
 
 ENV REPOSITORY=regexpress-flume
 ENV ARTIFACT=flume

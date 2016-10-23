@@ -78,7 +78,7 @@ public class FlumeTester extends Tester {
             event.setHeaders(new LinkedHashMap<String, String>());
             event = interceptor.intercept(event);
             int group = 0;
-            List<Object> row = new ArrayList(event.getHeaders().size());
+            List<String> row = new ArrayList(event.getHeaders().size());
             for(Map.Entry<String, String> entry : event.getHeaders().entrySet()) {
                 String headerName = entry.getKey();
                 String value = entry.getValue();
