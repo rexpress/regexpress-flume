@@ -66,7 +66,7 @@ public class FlumeTesterTest {
         Assert.assertNotNull(testResult.getResult());
         GroupResult groupResult = (GroupResult) testResult.getResult();
         Assert.assertArrayEquals(groupResult.getColumns().toArray(), new String[]{"A", "B", "C"});
-        Assert.assertArrayEquals(groupResult.getResultList().get(0).toArray(), new String[]{"Hello", "Test", "String"});
+        Assert.assertArrayEquals(groupResult.getResultList().get(0).get(0).toArray(), new String[]{"Hello", "Test", "String"});
         Assert.assertNull(groupResult.getResultList().get(1));
     }
 }

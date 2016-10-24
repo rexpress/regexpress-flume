@@ -35,7 +35,7 @@ public class FlumeTester extends Tester {
             context.put(RegexFilteringInterceptor.Constants.REGEX, (String) configMap.get(CONFIG_FILTERING_REGEX));
         }
         if(configMap.containsKey(CONFIG_FILTERING_EXCLUDE_EVENTS)) {
-            context.put(RegexFilteringInterceptor.Constants.EXCLUDE_EVENTS, (String) configMap.get(CONFIG_FILTERING_EXCLUDE_EVENTS));
+            context.put(RegexFilteringInterceptor.Constants.EXCLUDE_EVENTS, String.valueOf(configMap.get(CONFIG_FILTERING_EXCLUDE_EVENTS)));
         }
 
         RegexFilteringInterceptor.Builder regexFilteringInterceptor = new RegexFilteringInterceptor.Builder();
@@ -77,6 +77,7 @@ public class FlumeTester extends Tester {
             Event event = EventBuilder.withBody(testString.getBytes());
             event.setHeaders(new LinkedHashMap<String, String>());
             event = interceptor.intercept(event);
+
             int group = 0;
             List<String> row = new ArrayList(event.getHeaders().size());
             for(Map.Entry<String, String> entry : event.getHeaders().entrySet()) {
@@ -88,8 +89,10 @@ public class FlumeTester extends Tester {
                     groupResult.getColumns().add(headerName);
                 }
             }
+
             if(row.size() > 0) {
-                groupResult.getResultList().add(row);
+                GroupResult.GroupsList groupsList = new GroupResult.GroupsList(row);
+                groupResult.getResultList().add(groupsList);
             } else {
                 groupResult.getResultList().add(null);
             }
