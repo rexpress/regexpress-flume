@@ -1,9 +1,6 @@
 package express.regular.flume;
 
-import express.regular.common.GroupResult;
-import express.regular.common.MatchResult;
-import express.regular.common.TestResult;
-import express.regular.common.Tester;
+import express.regular.common.*;
 import express.regular.exception.InvalidConfigException;
 import org.apache.flume.Context;
 import org.apache.flume.Event;
@@ -11,9 +8,11 @@ import org.apache.flume.event.EventBuilder;
 import org.apache.flume.interceptor.Interceptor;
 import org.apache.flume.interceptor.RegexExtractorInterceptor;
 import org.apache.flume.interceptor.RegexFilteringInterceptor;
+import org.apache.flume.interceptor.SearchAndReplaceInterceptor;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.nio.charset.Charset;
 import java.util.*;
 
 public class FlumeTester extends Tester {
@@ -22,9 +21,13 @@ public class FlumeTester extends Tester {
     public static final String CONFIG_FILTERING_REGEX = RegexFilteringInterceptor.Constants.REGEX;
     public static final String CONFIG_FILTERING_EXCLUDE_EVENTS = RegexFilteringInterceptor.Constants.EXCLUDE_EVENTS;
     public static final String CONFIG_EXTRACTOR_FLUME_CONTEXT = "flume_context";
+    public static final String CONFIG_REPLACE_PATTERN = "searchPattern";
+    public static final String CONFIG_REPLACE_STRING = "replaceString";
+    public static final String CONFIG_REPLACE_CHARSET = "charset";
 
     public static final String TYPE_FILTERING = "filtering";
     public static final String TYPE_EXTRACTOR = "extractor";
+    public static final String TYPE_SEARCH_AND_REPLACE = "replace";
 
     public TestResult testRegexFilteringInterceptor(Map<String, Object> configMap, List<String> testStrings) throws IOException {
         TestResult testResult = new TestResult();
@@ -65,7 +68,7 @@ public class FlumeTester extends Tester {
 
         String flumeContextString = (String) configMap.get(CONFIG_EXTRACTOR_FLUME_CONTEXT);
         Properties props = new Properties();
-        props.load(new StringReader(flumeContextString));
+        props.load(new StringReader(flumeContextString.replace("\\","\\\\")));
 
         Context context = new Context((Map)props);
         RegexExtractorInterceptor.Builder builder = new RegexExtractorInterceptor.Builder();
@@ -102,6 +105,38 @@ public class FlumeTester extends Tester {
         return testResult;
     }
 
+    public TestResult testRegexSearchAndReplaceInterceptor(Map<String, Object> configMap, List<String> testStrings) throws IOException {
+        TestResult testResult = new TestResult();
+        testResult.setType(TestResult.Type.STRING);
+
+        Context context = new Context();
+        Charset charset = Charset.defaultCharset();
+        if(configMap.containsKey(CONFIG_REPLACE_CHARSET)) {
+            String charsetName = String.valueOf(configMap.get(CONFIG_REPLACE_CHARSET));
+            context.put(CONFIG_REPLACE_CHARSET, charsetName);
+            charset = Charset.forName(charsetName);
+        }
+        context.put(CONFIG_REPLACE_PATTERN, String.valueOf(configMap.get(CONFIG_REPLACE_PATTERN)));
+        context.put(CONFIG_REPLACE_STRING, String.valueOf(configMap.get(CONFIG_REPLACE_STRING)));
+
+        SearchAndReplaceInterceptor.Builder builder = new SearchAndReplaceInterceptor.Builder();
+        builder.configure(context);
+        Interceptor interceptor = builder.build();
+        interceptor.initialize();
+
+        StringResult stringResult = new StringResult();
+        for(int i = 0; i < testStrings.size(); i++) {
+            String testString = testStrings.get(i);
+            Event event = EventBuilder.withBody(testString.getBytes());
+            event = interceptor.intercept(event);
+            String replaced = new String(event.getBody(), charset);
+            stringResult.getResultList().add(replaced);
+        }
+        testResult.setResult(stringResult);
+
+        return testResult;
+    }
+
     public TestResult testRegex(Map<String, Object> configMap, List<String> testStrings) throws Exception {
         String testType = (String) configMap.get(CONFIG_TYPE);
         if(testType == null) {
@@ -112,6 +147,8 @@ public class FlumeTester extends Tester {
             return testRegexFilteringInterceptor(configMap, testStrings);
         } else if (testType.equals(TYPE_EXTRACTOR)) {
             return testRegexExtractorInterceptor(configMap, testStrings);
+        } else if (testType.equals(TYPE_SEARCH_AND_REPLACE)) {
+            return testRegexSearchAndReplaceInterceptor(configMap, testStrings);
         } else {
             throw new InvalidConfigException(String.format("Unsupported Test Type: %s", testType));
         }

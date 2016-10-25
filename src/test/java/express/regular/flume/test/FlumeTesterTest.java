@@ -1,10 +1,9 @@
 package express.regular.flume.test;
 
 import com.google.gson.Gson;
-import express.regular.common.GroupResult;
-import express.regular.common.MatchResult;
-import express.regular.common.TestResult;
+import express.regular.common.*;
 import express.regular.flume.FlumeTester;
+import org.apache.flume.Context;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -51,8 +50,8 @@ public class FlumeTesterTest {
                 .append("serializers.s3.name=C").append("\n")
                 .append("serializers.s3.type=DEFAULT").append("\n");
 
-        configMap.put(FlumeTester.CONFIG_EXTRACTOR_FLUME_CONTEXT, flumeContext.toString());
 
+        configMap.put(FlumeTester.CONFIG_EXTRACTOR_FLUME_CONTEXT, flumeContext.toString());
         List<String> testStrings = Arrays.asList(new String[]{"Hello Test String", "Hello2 Test2 String2"});
 
         Gson gson = new Gson();
@@ -68,5 +67,27 @@ public class FlumeTesterTest {
         Assert.assertArrayEquals(groupResult.getColumns().toArray(), new String[]{"A", "B", "C"});
         Assert.assertArrayEquals(groupResult.getResultList().get(0).getGroups(0).toArray(), new String[]{"Hello", "Test", "String"});
         Assert.assertNull(groupResult.getResultList().get(1));
+    }
+
+    @Test
+    public void flumeReplaceTest() {
+        Map<String, Object> configMap = new HashMap<String, Object>();
+        configMap.put(FlumeTester.CONFIG_TYPE, FlumeTester.TYPE_SEARCH_AND_REPLACE);
+        configMap.put(FlumeTester.CONFIG_REPLACE_PATTERN,  "([a-zA-Z]*) ([a-zA-Z]*) ([a-zA-Z]*)");
+        configMap.put(FlumeTester.CONFIG_REPLACE_STRING, "$1! $2! $3!");
+
+        List<String> testMap = Arrays.asList(new String[]{"Hello Test String", "Hello2 Test2 String2"});
+
+        Gson gson = new Gson();
+        String configJsonString = gson.toJson(configMap);
+        String testJsonString = gson.toJson(testMap);
+
+        FlumeTester flumeTester = new FlumeTester();
+        TestResult testResult = flumeTester.testMain(configJsonString, testJsonString);
+        Assert.assertEquals(testResult.getType(), TestResult.Type.STRING);
+        Assert.assertNotNull(testResult.getResult());
+        StringResult stringResult = (StringResult) testResult.getResult();
+        Assert.assertEquals(stringResult.getResultList().get(0), "Hello! Test! String!");
+        Assert.assertEquals(stringResult.getResultList().get(1), "Hello2 Test2 String2");
     }
 }
