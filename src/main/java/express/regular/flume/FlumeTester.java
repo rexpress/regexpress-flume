@@ -111,7 +111,7 @@ public class FlumeTester extends Tester {
 
         Context context = new Context();
         Charset charset = Charset.defaultCharset();
-        if(configMap.containsKey(CONFIG_REPLACE_CHARSET)) {
+        if(configMap.containsKey(CONFIG_REPLACE_CHARSET) && !String.valueOf(configMap.get(CONFIG_REPLACE_CHARSET)).isEmpty()) {
             String charsetName = String.valueOf(configMap.get(CONFIG_REPLACE_CHARSET));
             context.put(CONFIG_REPLACE_CHARSET, charsetName);
             charset = Charset.forName(charsetName);
