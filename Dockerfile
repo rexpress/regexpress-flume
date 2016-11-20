@@ -17,7 +17,7 @@ RUN cd /tmp && \
     mv $REPOSITORY-$BRANCH/target/$ARTIFACT-$BRANCH.jar /root && \
     rm -rf /tmp/* && \
     cd /root && \
-    echo "arg=();for var in \"\$@\";do arg+=(\$(echo -n \"\$var\" | base64 -d)); done; java -jar /root/$ARTIFACT-$BRANCH.jar \"\${arg[@]}\"" > run.sh && \
+    echo "arg=();for var in \"\$@\";do arg+=(\"\$(echo -n \"\$var\" | base64 -d)\"); done; java -jar /root/$ARTIFACT-$BRANCH.jar \"\${arg[@]}\"" > run.sh && \
     chmod 755 run.sh 
     
 ENTRYPOINT ["/bin/bash", "/root/run.sh"]
